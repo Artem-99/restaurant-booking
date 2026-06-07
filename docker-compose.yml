@@ -27,7 +27,7 @@ services:
       DB_PASSWORD: postgres
       DB_HOST: db
       DB_PORT: "5432"
-      TZ: Asia/Omsk
+      TZ: Asia/Chita
     ports:
       - "8000:8000"
     depends_on:
