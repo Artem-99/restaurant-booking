@@ -1,6 +1,6 @@
 from ninja import Router
 from ninja.errors import HttpError
-from datetime import datetime
+from datetime import datetime, timedelta
 from .models import User, Table, Booking
 from .schemas import (
     RegisterIn, LoginIn, UserOut, TokenOut,
@@ -70,10 +70,12 @@ tables_router = Router(tags=["tables"])
 
 @tables_router.get("/", response=list[TableOut])
 def list_tables(request):
-    today = datetime.now().date()
+    now = datetime.now()
+    today = now.date()
+    soon = (now + timedelta(hours=1)).time()
     booked_ids = set(
         Booking.objects.filter(
-            date=today, status="confirmed"
+            date=today, status="confirmed", start_time__lte=soon
         ).values_list("table_id", flat=True)
     )
     result = []
@@ -148,11 +150,12 @@ def create_booking(request, data: BookingIn):
     if data.guests_count > table.capacity:
         raise HttpError(400, f"Вместимость столика: {table.capacity} чел.")
 
+    new_end = (datetime.combine(data.date, data.start_time) + timedelta(hours=1)).time()
     conflict = Booking.objects.filter(
-        table=table, date=data.date, status="confirmed"
+        table=table, date=data.date, status="confirmed", start_time__lt=new_end
     ).exists()
     if conflict:
-        raise HttpError(409, "Этот столик уже занят на выбранную дату")
+        raise HttpError(409, "Столик занят — нужен интервал минимум 1 час между бронированиями")
 
     booking = Booking.objects.create(
         user=request.auth,
