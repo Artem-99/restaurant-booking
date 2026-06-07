@@ -83,15 +83,16 @@ def test_create_table_as_user(client, user_token):
 
 @pytest.mark.django_db
 def test_create_booking(client, user_token, admin_token):
-    client.post(
+    table_resp = client.post(
         "/api/tables/",
         data={"number": 1, "name": "У окна", "capacity": 4},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {admin_token}",
     )
+    table_id = table_resp.json()["id"]
     resp = client.post(
         "/api/bookings/",
-        data={"table_id": 1, "date": "2026-12-01", "start_time": "12:00", "guests_count": 2},
+        data={"table_id": table_id, "date": "2026-12-01", "start_time": "12:00", "guests_count": 2},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {user_token}",
     )
@@ -101,21 +102,22 @@ def test_create_booking(client, user_token, admin_token):
 
 @pytest.mark.django_db
 def test_double_booking(client, user_token, admin_token):
-    client.post(
+    table_resp = client.post(
         "/api/tables/",
         data={"number": 1, "name": "У окна", "capacity": 4},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {admin_token}",
     )
+    table_id = table_resp.json()["id"]
     client.post(
         "/api/bookings/",
-        data={"table_id": 1, "date": "2026-12-01", "start_time": "12:00", "guests_count": 2},
+        data={"table_id": table_id, "date": "2026-12-01", "start_time": "12:00", "guests_count": 2},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {user_token}",
     )
     resp = client.post(
         "/api/bookings/",
-        data={"table_id": 1, "date": "2026-12-01", "start_time": "14:00", "guests_count": 1},
+        data={"table_id": table_id, "date": "2026-12-01", "start_time": "14:00", "guests_count": 1},
         content_type="application/json",
         HTTP_AUTHORIZATION=f"Bearer {user_token}",
     )
