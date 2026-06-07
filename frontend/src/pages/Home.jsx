@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { tablesApi, bookingsApi } from "../api";
 
 function TableCard({ table, onBook }) {
-  const available = table.is_available && !table.is_booked_today;
+  const unavailable = !table.is_available;
   const booked = table.is_booked_today;
-  const canBook = available && !booked;
+  const canBook = !unavailable && !booked;
 
   let statusLabel, statusClass;
-  if (!available) {
+  if (unavailable) {
     statusLabel = "Недоступен"; statusClass = "bg-red-100 text-red-600";
   } else if (booked) {
     statusLabel = "Занят"; statusClass = "bg-orange-100 text-orange-600";
