@@ -2,7 +2,10 @@ const BASE = "/api";
 
 function getHeaders() {
   const token = localStorage.getItem("token");
-  const h = { "Content-Type": "application/json" };
+  const h = {
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
+  };
   if (token) h["Authorization"] = `Bearer ${token}`;
   return h;
 }

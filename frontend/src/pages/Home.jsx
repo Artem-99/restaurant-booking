@@ -2,24 +2,32 @@ import { useState, useEffect, useCallback } from "react";
 import { tablesApi, bookingsApi } from "../api";
 
 function TableCard({ table, onBook }) {
-  const available = table.is_available;
+  const available = table.is_available && !table.is_booked_today;
+  const booked = table.is_booked_today;
+  const canBook = available && !booked;
+
+  let statusLabel, statusClass;
+  if (!available) {
+    statusLabel = "Недоступен"; statusClass = "bg-red-100 text-red-600";
+  } else if (booked) {
+    statusLabel = "Занят"; statusClass = "bg-orange-100 text-orange-600";
+  } else {
+    statusLabel = "Свободен"; statusClass = "bg-green-100 text-green-700";
+  }
+
   return (
     <div
       className={`bg-white rounded-2xl border-2 p-5 transition-all ${
-        available
+        canBook
           ? "border-amber-200 hover:border-amber-500 hover:shadow-md cursor-pointer"
           : "border-stone-200 opacity-60 cursor-not-allowed"
       }`}
-      onClick={() => available && onBook(table)}
+      onClick={() => canBook && onBook(table)}
     >
       <div className="flex justify-between items-start mb-3">
         <div className="text-3xl">🪑</div>
-        <span
-          className={`text-xs px-2 py-1 rounded-full font-medium ${
-            available ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"
-          }`}
-        >
-          {available ? "Свободен" : "Недоступен"}
+        <span className={`text-xs px-2 py-1 rounded-full font-medium ${statusClass}`}>
+          {statusLabel}
         </span>
       </div>
       <h3 className="font-semibold text-stone-800 text-lg">
@@ -33,7 +41,7 @@ function TableCard({ table, onBook }) {
       {table.description && (
         <p className="mt-2 text-xs text-stone-400 italic">{table.description}</p>
       )}
-      {available && (
+      {canBook && (
         <button className="mt-4 w-full bg-amber-700 hover:bg-amber-600 text-white py-2 rounded-lg text-sm font-medium transition-colors">
           Забронировать
         </button>
@@ -47,7 +55,6 @@ function BookingModal({ table, onClose, onSuccess }) {
   const [form, setForm] = useState({
     date: today,
     start_time: "12:00",
-    end_time: "14:00",
     guests_count: 1,
     comment: "",
   });
@@ -92,28 +99,16 @@ function BookingModal({ table, onClose, onSuccess }) {
               className="mt-1 block w-full border border-stone-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
           </label>
-          <div className="grid grid-cols-2 gap-3">
-            <label className="block">
-              <span className="text-sm font-medium text-stone-700">Начало</span>
-              <input
-                type="time"
-                required
-                value={form.start_time}
-                onChange={(e) => setForm({ ...form, start_time: e.target.value })}
-                className="mt-1 block w-full border border-stone-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </label>
-            <label className="block">
-              <span className="text-sm font-medium text-stone-700">Конец</span>
-              <input
-                type="time"
-                required
-                value={form.end_time}
-                onChange={(e) => setForm({ ...form, end_time: e.target.value })}
-                className="mt-1 block w-full border border-stone-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </label>
-          </div>
+          <label className="block">
+            <span className="text-sm font-medium text-stone-700">Время прихода</span>
+            <input
+              type="time"
+              required
+              value={form.start_time}
+              onChange={(e) => setForm({ ...form, start_time: e.target.value })}
+              className="mt-1 block w-full border border-stone-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+          </label>
           <label className="block">
             <span className="text-sm font-medium text-stone-700">
               Количество гостей (макс. {table.capacity})
@@ -223,7 +218,7 @@ export default function Home() {
                     🪑 Столик №{b.table.number} — {b.table.name}
                   </p>
                   <p className="text-sm text-stone-500 mt-1">
-                    📅 {b.date} · ⏰ {b.start_time.slice(0, 5)} – {b.end_time.slice(0, 5)} · 👥 {b.guests_count} чел.
+                    📅 {b.date} · ⏰ {b.start_time.slice(0, 5)} · 👥 {b.guests_count} чел.
                   </p>
                   {b.comment && (
                     <p className="text-sm italic text-stone-400 mt-1">{b.comment}</p>

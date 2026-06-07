@@ -114,7 +114,7 @@ export default function Admin() {
                   🪑 Столик №{b.table.number} — {b.table.name}
                 </p>
                 <p className="text-sm text-stone-500 mt-1">
-                  👤 {b.user.first_name} ({b.user.email}) · 📅 {b.date} · ⏰ {b.start_time.slice(0, 5)} – {b.end_time.slice(0, 5)} · 👥 {b.guests_count} чел.
+                  👤 {b.user.first_name} ({b.user.email}) · 📅 {b.date} · ⏰ {b.start_time.slice(0, 5)} · 👥 {b.guests_count} чел.
                 </p>
                 {b.comment && <p className="text-xs italic text-stone-400">{b.comment}</p>}
               </div>
@@ -131,9 +131,9 @@ export default function Admin() {
                 {b.status === "confirmed" && (
                   <button
                     onClick={() => cancelBooking(b.id)}
-                    className="text-sm text-red-500 hover:text-red-700 hover:underline"
+                    className="text-sm text-green-600 hover:text-green-800 hover:underline font-medium"
                   >
-                    Отменить
+                    Освободить стол
                   </button>
                 )}
               </div>

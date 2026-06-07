@@ -15,9 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.staticfiles",
     "corsheaders",
-    "apps.users",
-    "apps.tables",
-    "apps.bookings",
+    "restaurant",
 ]
 
 STATIC_URL = "/static/"
@@ -58,7 +56,10 @@ DATABASES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "restaurant.User"
+
+TIME_ZONE = "Asia/Omsk"
+USE_TZ = False
 
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24

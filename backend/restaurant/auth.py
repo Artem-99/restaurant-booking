@@ -14,9 +14,11 @@ def create_token(user_id: int) -> str:
 
 class AuthBearer(HttpBearer):
     def authenticate(self, request, token: str):
-        from apps.users.models import User
+        from restaurant.models import User
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+            payload = jwt.decode(
+                token, settings.SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+            )
             return User.objects.get(id=int(payload["sub"]))
         except (JWTError, Exception):
             return None
