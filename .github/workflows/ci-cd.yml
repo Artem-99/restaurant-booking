@@ -86,7 +86,9 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: ghcr.io/${{ env.IMAGE_PREFIX }}/backend:${{ github.sha }}
+          tags: |
+            ghcr.io/${{ env.IMAGE_PREFIX }}/backend:latest
+            ghcr.io/${{ env.IMAGE_PREFIX }}/backend:${{ github.sha }}
 
       - name: Build & push frontend image
         if: github.ref == 'refs/heads/main'
@@ -94,7 +96,9 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: ghcr.io/${{ env.IMAGE_PREFIX }}/frontend:${{ github.sha }}
+          tags: |
+            ghcr.io/${{ env.IMAGE_PREFIX }}/frontend:latest
+            ghcr.io/${{ env.IMAGE_PREFIX }}/frontend:${{ github.sha }}
 
   # ─── Stage 2: Deploy ─────────────────────────────────────────────────────────
   deploy:
