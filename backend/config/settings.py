@@ -58,7 +58,7 @@ DATABASES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "restaurant.User"
 
-TIME_ZONE = "Asia/Omsk"
+TIME_ZONE = "Asia/Chita"
 USE_TZ = False
 
 JWT_ALGORITHM = "HS256"

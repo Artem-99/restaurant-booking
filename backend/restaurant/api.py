@@ -1,6 +1,11 @@
 from ninja import Router
 from ninja.errors import HttpError
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
+UTC_PLUS_9 = timezone(timedelta(hours=9))
+
+def local_now():
+    return datetime.now(tz=timezone.utc).astimezone(UTC_PLUS_9).replace(tzinfo=None)
 from .models import User, Table, Booking
 from .schemas import (
     RegisterIn, LoginIn, UserOut, TokenOut,
@@ -70,7 +75,7 @@ tables_router = Router(tags=["tables"])
 
 @tables_router.get("/", response=list[TableOut])
 def list_tables(request):
-    now = datetime.now()
+    now = local_now()
     today = now.date()
     soon = (now + timedelta(hours=1)).time()
     booked_ids = set(
