@@ -70,12 +70,10 @@ tables_router = Router(tags=["tables"])
 
 @tables_router.get("/", response=list[TableOut])
 def list_tables(request):
-    current = datetime.now()
-    today = current.date()
-    current_time = current.time()
+    today = datetime.now().date()
     booked_ids = set(
         Booking.objects.filter(
-            date=today, status="confirmed", start_time__lte=current_time
+            date=today, status="confirmed"
         ).values_list("table_id", flat=True)
     )
     result = []
